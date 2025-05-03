@@ -370,7 +370,7 @@ def cham_phieu(sheet):
     cv2.waitKey(0)
 
 
-cham_phieu('PhieuQG/PhieuQG.0124.jpg')
+cham_phieu('PhieuQG/PhieuQG.0043.jpg')
 
 # folder_path = 'PhieuQG'
 # all_files = glob.glob(f'{folder_path}/*')
