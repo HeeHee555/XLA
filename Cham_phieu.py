@@ -9,6 +9,7 @@ import os
 import glob
 import json
 
+Phieu_loi = 0
 
 if True:
     Xsbd = []
@@ -54,14 +55,15 @@ def is_bubble_filled(bubble_roi, threshold=0.3, avg = 100):
     return fill_ratio > threshold
 
 def thresholding(img, avg = 100):
-    if len(img.shape) == 3:
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    _, thresh = cv2.threshold(img, avg, 255, cv2.THRESH_BINARY_INV)
-    kernel = np.ones((3, 3), np.uint8)
-    eroded = cv2.erode(thresh, kernel, iterations=1)
-    cv2.imshow('thresh', eroded)
-    cv2.waitKey(0)
-    return eroded
+    # if len(img.shape) == 3:
+    #     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # _, thresh = cv2.threshold(img, avg, 255, cv2.THRESH_BINARY_INV)
+    # kernel = np.ones((3, 3), np.uint8)
+    # eroded = cv2.erode(thresh, kernel, iterations=1)
+    # cv2.imshow('thresh', eroded)
+    # cv2.waitKey(0)
+    # return eroded
+    pass
 
 def preprocess_image(image):
     img = cv2.imread(image, 0)
@@ -189,11 +191,22 @@ def get_info(thresh, part):
     std_dev = np.std(box)
     avg = np.mean(box) - 0 - std_dev
     SBD = ''
-    for idx,i in enumerate(Xsbd):
-        roi = box[i[1]-18:i[1]+18, i[0]-18:i[0]+18]
-        if is_bubble_filled(roi, 0.7, avg):
-            cv2.circle(box, tuple(i), radius=18, color=(0, 255, 0), thickness=2)
-            SBD += str(idx%10)
+    for i in range(8,0,-1):
+        SBDx = ''
+        threshold = 0.1*i
+        boxx = box.copy()
+        for idx,i in enumerate(Xsbd):
+            roi = boxx[i[1]-18:i[1]+18, i[0]-18:i[0]+18]
+            if is_bubble_filled(roi, threshold, avg):
+                cv2.circle(boxx, tuple(i), radius=18, color=(0, 255, 0), thickness=2)
+                SBDx += str(idx%10)
+        if len(SBDx) == 6: 
+            SBD = SBDx
+            box = boxx
+            break
+        elif 0 < len(SBDx) < 6:
+            SBD = SBDx
+            box = boxx
     if len(box.shape) == 2: box = cv2.cvtColor(box, cv2.COLOR_GRAY2BGR)
     y, x, z = box.shape
     output[425:425+y,1775:1775+x] = box
@@ -201,15 +214,19 @@ def get_info(thresh, part):
     avg = np.mean(box2) - std_dev
     MDT = ''
     thresholding(box2, avg)
-    for i in range(8,0,1):
-        MDT = ''
+    for i in range(8,0,-1):
+        MDTx = ''
         threshold = 0.1*i
         box2x = box2.copy()
-    for idx,i in enumerate(Xmdt):
-        roi = box2[i[1]-18:i[1]+18, i[0]-18:i[0]+18]
-        if is_bubble_filled(roi, 0.1, avg):
-            cv2.circle(box2, tuple(i), radius=18, color=(0, 255, 0), thickness=2)
-            MDT += str(idx%10)
+        for idx,i in enumerate(Xmdt):
+            roi = box2x[i[1]-18:i[1]+18, i[0]-18:i[0]+18]
+            if is_bubble_filled(roi, threshold, avg):
+                cv2.circle(box2x, tuple(i), radius=18, color=(0, 255, 0), thickness=2)
+                MDTx += str(idx%10)
+        if len(MDTx) == 3: 
+            MDT = MDTx
+            box2 = box2x
+        
     if len(box2.shape) == 2: box2 = cv2.cvtColor(box2, cv2.COLOR_GRAY2BGR)
     y, x, z = box2.shape
     output[425:425+y,2130:2130+x] = box2
@@ -365,14 +382,14 @@ def cham_phieu(sheet):
     print(json.dumps(result, indent=2, ensure_ascii=False))
 
     filename = os.path.basename(sheet)
-    cv2.imwrite(f'Output/{filename}', output)
-    cv2.imshow("Output", output)
-    cv2.waitKey(0)
+    # cv2.imwrite(f'Output/{filename}', output)
+    # cv2.imshow("Output", output)
+    # cv2.waitKey(0)
 
 
-cham_phieu('PhieuQG/PhieuQG.0043.jpg')
+# cham_phieu('PhieuQG/PhieuQG.0043.jpg')
 
-# folder_path = 'PhieuQG'
-# all_files = glob.glob(f'{folder_path}/*')
-# for jpg_file in all_files:
-#     cham_phieu(jpg_file)
+folder_path = 'PhieuQG'
+all_files = glob.glob(f'{folder_path}/*')
+for jpg_file in all_files:
+    cham_phieu(jpg_file)
