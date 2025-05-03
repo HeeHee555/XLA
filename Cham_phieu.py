@@ -68,8 +68,8 @@ def thresholding(img, avg = 100, i=1):
             value = j
             break
         value = 0
-    cv2.imshow('thresh', eroded)
-    cv2.waitKey(0)
+    # cv2.imshow('thresh', eroded)
+    # cv2.waitKey(0)
     return value
     pass
 
@@ -394,14 +394,14 @@ def cham_phieu(sheet):
     # print(json.dumps(result, indent=2, ensure_ascii=False))
 
     filename = os.path.basename(sheet)
-    # cv2.imwrite(f'Output/{filename}', output)
-    cv2.imshow("Output", output)
-    cv2.waitKey(0)
+    cv2.imwrite(f'Output/{filename}', output)
+    # cv2.imshow("Output", output)
+    # cv2.waitKey(0)
 
 
-cham_phieu('PhieuQG/PhieuQG.0017.jpg')
+# cham_phieu('PhieuQG/PhieuQG.0017.jpg')
 
-# folder_path = 'PhieuQG'
-# all_files = glob.glob(f'{folder_path}/*')
-# for jpg_file in all_files:
-#     cham_phieu(jpg_file)
+folder_path = 'PhieuQG'
+all_files = glob.glob(f'{folder_path}/*')
+for jpg_file in all_files:
+    cham_phieu(jpg_file)
